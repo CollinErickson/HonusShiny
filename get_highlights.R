@@ -1,4 +1,4 @@
-get_highlights <- function(year, month, day, away_code, home_code, dbh, game_pk) {
+get_highlights <- function(year, month, day, away_code, home_code, dbh, game_pk, return_number=FALSE) {
   # bburl <- "https://statsapi.mlb.com/api/v1/game/565898/content?language=en"
   bburl <- paste0("https://statsapi.mlb.com/api/v1/game/", game_pk,"/content?language=en")
   cat("going to pull from", bburl, "\n")
@@ -28,6 +28,7 @@ get_highlights <- function(year, month, day, away_code, home_code, dbh, game_pk)
       url1800K = gsub('4000K','1800K',url4000K);
       url = url4000K; # This sets the quality
       # echo(the headline
+      cat("Inintial video url is", url, "\n")
       echo("<tr class='headlinestabletr' id='headlinetr",iii,"' onclick='document.getElementById(\"headlinetr",iii,"\").style.background = \"#e0ccff\";'>
         <td id='headline",iii,"' class='headlinestabletd' 
         onclick='document.getElementById(\"videoplayer\").setAttribute(\"src\", \"",url,"\");
@@ -73,6 +74,11 @@ get_highlights <- function(year, month, day, away_code, home_code, dbh, game_pk)
   }
   
   echo('</td></tr></table>')
-  outstring
+  if (return_number) {
+    list(outstring=outstring,
+         number=length(headlines))
+  } else {
+    outstring
+  }
 }
 get_highlights("2019", "04", "02", "det", "nya", "1", "567460")

@@ -46,6 +46,12 @@ selected_game_xml <- msl[[selected_game]]
 all_team_abbrev <- c("ANA", "ARI", "ATL", "BAL", "BOS", "CHA", "CHN", "CIN", "CLE", "COL",
                      "DET", "HOU", "KCA", "LAN", "MIA", "MIL", "MIN", "NYA", "NYN", "OAK",
                      "PHI", "PIT", "SDN", "SEA", "SFN", "SLN", "TBA", "TEX", "TOR", "WAS")
+all_team_abbrev <- c("ANA", "ARI", "ATL", "BAL", "BOS", "CHA", "CHN", "CIN", "CLE", "COL",
+                     "DET", "HOU", "KCA", "LAN", "MIA", "MIL", "MIN", "NYY", "NYN", "OAK",
+                     "PHI", "PIT", "SDN", "SEA", "SFN", "SLN", "TBA", "TEX", "TOR", "WSH")
+
+num_highlights <- NA
+
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -56,13 +62,14 @@ ui <- fluidPage(
   
   # top row
   fluidRow(
-    column(1, h4("Honus")),
+    column(1, h1("Honus")),
     column(2,
            # HTML("Team:"),
            selectInput("selectedteam",
                        label="Team",
-                       choices=all_team_abbrev)),
-    column(5,
+                       choices=all_team_abbrev,
+                       selected=selected_code)),
+    column(1,
            dateInput("selecteddate",
                      label="Date")),
     column(1,
@@ -71,7 +78,7 @@ ui <- fluidPage(
            actionButton("gototoday", label="|")),
     column(1,
            actionButton("forward1day", label=">")),
-    column(1,
+    column(5,
            HTML(
              paste0(
                "<div>", 
@@ -91,7 +98,7 @@ ui <- fluidPage(
       HTML(
         get_all_game_boxes_for_sidebar(msl)
       ),
-      width=3
+      width=2
     ),
     
     # Show a plot of the generated distribution
@@ -106,6 +113,12 @@ ui <- fluidPage(
         ),
         column(6,
           uiOutput("highlight_embedded")
+#           HTML('<video id="videoplayer" controls  onclick="this.paused ? this.play() : this.pause();">
+# 					<source src="https://cuts.diamond.mlb.com/FORGE/2019/2019-04/03/17fd926c-c985a511-52b8d70e-csvm-diamondx64-asset_1280x720_59_4000K.mp4" type="video/mp4">
+#                Your browser does not support the video tag.
+#                </video>')
+          # tags$video(id="video2", type = "video/mp4",src = "https://cuts.diamond.mlb.com/FORGE/2019/2019-04/03/17fd926c-c985a511-52b8d70e-csvm-diamondx64-asset_1280x720_59_4000K.mp4",
+          #            controls = "controls")
         )
       )
     )
@@ -113,7 +126,15 @@ ui <- fluidPage(
 )
 
 # Define server logic required to draw a histogram
-server <- function(input, output) {
+server <- function(input, output, session) {
+  # Try to use inputs
+  observe({
+    query <- parseQueryString(session$clientData$url_search)
+    if (!is.null(query[['text']])) {
+      cat("input from url is\n", query[['text']], '\n\n')
+      updateTextInput(session, "text", value = query[['text']])
+    }
+  })
   
   # output$distPlot <- renderPlot({
   #   # generate bins based on input$bins from ui.R
@@ -126,11 +147,37 @@ server <- function(input, output) {
   # })
   
   output$highlights_html <- renderUI({
+    get_highlights_out <- 
+      get_highlights(year, month, day, away_code, home_code, game_nbr, game_pk, return_number = T)
+    num_highlights <<- get_highlights_out$number
+    cat("num highlights is !!!", get_highlights_out$number, "\n")
+    
+    # Set up so click on highlight title will load video
+    for (i_outer in 1:num_highlights) {
+      local({
+        i <- i_outer # Need this and local or else it always thinks you clicked on last box, see https://github.com/daattali/shinyjs/issues/167
+        cat("setting onclick for highlight", i, "\n")
+        shinyjs::onclick(id=paste0("headlinetr", i),
+                         # expr=set_highlights_for_game_number(i)
+                         expr={cat("clicked on game", i, "\n");output$highlight_embedded <- renderUI({
+#                            HTML('<video id="videoplayer" controls  onclick="this.paused ? this.play() : this.pause();">
+# 					<source src="https://cuts.diamond.mlb.com/FORGE/2019/2019-04/03/17fd926c-c985a511-52b8d70e-csvm-diamondx64-asset_1280x720_59_4000K.mp4" type="video/mp4">
+#                Your browser does not support the video tag.
+#                </video>')
+                           HTML("I")
+                         })}
+        )
+      })
+    }
+    
+    
     HTML(
-      get_highlights(year, month, day, away_code, home_code, game_nbr, game_pk)
+      get_highlights_out$outstring
     )
   })
+  cat("num highlights is $$$$", num_highlights, "\n")
   
+  # Set up so click on game from left side will reload highlights
   for (i_outer in 1:num_games) {
     local({
       i <- i_outer # Need this and local or else it always thinks you clicked on last box, see https://github.com/daattali/shinyjs/issues/167
@@ -145,7 +192,6 @@ server <- function(input, output) {
       )
     })
   }
-  
   
 }
 
