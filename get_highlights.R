@@ -1,6 +1,7 @@
-get_highlights <- function(year, month, day, away_code, home_code, dbh, game_id) {
-  bburl <- "https://statsapi.mlb.com/api/v1/game/565898/content?language=en"
-  # bburl <- paste0("https://statsapi.mlb.com/api/v1/game/", game_id,"/content?language=en")
+get_highlights <- function(year, month, day, away_code, home_code, dbh, game_pk) {
+  # bburl <- "https://statsapi.mlb.com/api/v1/game/565898/content?language=en"
+  bburl <- paste0("https://statsapi.mlb.com/api/v1/game/", game_pk,"/content?language=en")
+  cat("going to pull from", bburl, "\n")
   require(jsonlite)
   p1 <- fromJSON(bburl)
   headlines <- p1$highlights$highlights$items$headline
@@ -74,4 +75,4 @@ get_highlights <- function(year, month, day, away_code, home_code, dbh, game_id)
   echo('</td></tr></table>')
   outstring
 }
-get_highlights("2019", "04", "02", "det", "nya", "1", NA)
+get_highlights("2019", "04", "02", "det", "nya", "1", "567460")

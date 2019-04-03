@@ -80,7 +80,7 @@ get_all_game_boxes_for_sidebar <- function(msl) {
       # if ($a -> attributes() -> is_no_hiter){echo 'NH';}
       if (a$status["top_inning"]=="Y"){echo ("&#x25B2;")} else {echo ("&#x25BC;")}
       echo (a$status["inning"]) 
-      outs = a$status["outs"] 
+      outs = if ("outs" %in% names(a$status)) a$status["outs"] else a$status["o"]
       if(outs == '0') { #  display number of outs with dots or pipe
         #  do nothing
       } else if (outs == '1'){
@@ -112,8 +112,8 @@ get_all_game_boxes_for_sidebar <- function(msl) {
       } else {
         echo ("<br><a href='" , mlbtvlink_url , "' target='_blank'  style='text-decoration: none;color:inherit'>&#x1F4FA;</a>")
       }
-      echo (" <img src='/Baserunners" , baseRunnerStatus ,
-            ".png' alt='Baserunners' height='12' width='12' />")
+      # echo (" <img src='/Baserunners" , baseRunnerStatus ,
+      #       ".png' alt='Baserunners' height='12' width='12' />")
       echo ("</td></tr></table><td>")
       echo ("<table><tr><td>P:", a$pitcher["last"] , "</td></tr>") # $a -> pitcher -> attributes() -> last
       echo ("<tr><td>B:" , a$batter["last"]  , "</td>") # $a -> batter -> attributes() -> last
@@ -181,5 +181,5 @@ get_all_game_boxes_for_sidebar <- function(msl) {
   echo ("</table>");
   outstring
 }
-createGameOnclickURLForJS <- function(away, year, month, day, gamenbr){("NEEDTOIMPLEMENTTHIS")}
+createGameOnclickURLForJS <- function(away, year, month, day, gamenbr){logjs("NEEDTOIMPLEMENTTHIS");""}
 get_all_game_boxes_for_sidebar(msl)
