@@ -28,7 +28,7 @@ get_highlights <- function(year, month, day, away_code, home_code, dbh, game_pk,
       url1800K = gsub('4000K','1800K',url4000K);
       url = url4000K; # This sets the quality
       # echo(the headline
-      cat("Inintial video url is", url, "\n")
+      # cat("Inintial video url is", url, "\n")
       echo("<tr class='headlinestabletr' id='headlinetr",iii,"' onclick='document.getElementById(\"headlinetr",iii,"\").style.background = \"#e0ccff\";'>
         <td id='headline",iii,"' class='headlinestabletd' 
         onclick='document.getElementById(\"videoplayer\").setAttribute(\"src\", \"",url,"\");
@@ -54,7 +54,7 @@ get_highlights <- function(year, month, day, away_code, home_code, dbh, game_pk,
   # This section makes the video player
   # make video player if any headlines
   if (length(headlines)>0) {
-    echo('<video id="videoplayer" controls  onclick="this.paused ? this.play() : this.pause();">
+    echo('<video width="600px" id="videoplayer" controls  onclick="this.paused ? this.play() : this.pause();">
 					<source src="<?php echo($urls[0];?>" type="video/mp4">
 					Your browser does not support the video tag.
 					</video>');
