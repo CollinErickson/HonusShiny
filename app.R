@@ -9,6 +9,10 @@
 
 library(shiny)
 # library(shinyjs)
+library(V8)
+source("get_highlights.R")
+source("get_linescore.R")
+source("get_leftside_game_box_score_table.R")
 shinyjs::useShinyjs()
 logjs <- cat
 catn <- function(...) {cat(..., "\n")}
@@ -62,9 +66,9 @@ ui <- fluidPage(
   titlePanel("Honus"),
   
   # top row
-  fluidRow(
-    column(1, h1("Honus")),
-    column(2,
+  tags$table(tags$tr(
+    tags$td( h1("Honus")),
+    tags$td(
            # HTML("Team:"),
            # selectInput("selectteam",
            #             label="Team",
@@ -72,11 +76,11 @@ ui <- fluidPage(
            #             selected=selected_code)
            uiOutput("select_team_input")
     ),
-    column(4,
+    tags$td(
            tags$table(
-             tags$tr(
-               tags$td(
-                 dateInput("datepicker",
+             tags$tr(style="padding-right:1em",
+               tags$td(style="padding-right:1em",
+                 dateInput("datepicker", width="8em",
                            label="Date")
                ),
                HTML('
@@ -88,13 +92,15 @@ ui <- fluidPage(
                     '
                )
              ))),
-    # column(1,
+    tags$td(
+           uiOutput("toplinescore")),
+    # tags$td(1,
     #        actionButton("back1day", label="<")),
-    # column(1,
+    # tags$td(1,
     #        actionButton("gototoday", label="|")),
-    # column(1,
+    # tags$td(1,
     #        actionButton("forward1day", label=">")),
-    column(3,
+    tags$td(
            # HTML(
            #   paste0(
            #     "<div>", 
@@ -107,11 +113,11 @@ ui <- fluidPage(
            #     "</div>"))
            uiOutput("header_team_info")
     ),
-    column(2,
+    tags$td(
            sliderInput("video_size_slider", "Video size", 100, 2000, value=1000, step=10)#,
            # tableOutput("values")
     )
-  ),
+  )), # end tr and table
   
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
@@ -220,7 +226,7 @@ server <- function(input, output, session) {
     # Render selected team input
     output$select_team_input <- renderUI( {
       selectInput("selectteam",
-                  label="Team",
+                  label="Team", width="6em",
                   choices=all_team_abbrev,
                   selected=selected_code)
     })
@@ -236,6 +242,10 @@ server <- function(input, output, session) {
           selected_game_xml$.attrs["home_win"], "-",
           selected_game_xml$.attrs["home_loss"], ")",
           "</div>"))
+    })
+    # Render top linescore
+    output$toplinescore <- renderUI({
+      HTML(get_linescore(selected_game_xml))
     })
     # Render sidebar_boxes
     output$sidebar_boxes <- renderUI({

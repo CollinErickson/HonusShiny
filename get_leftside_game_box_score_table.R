@@ -19,9 +19,10 @@ get_all_game_boxes_for_sidebar <- function(msl) {
     a <- msl[[iii]]
     #  add new row for each game
     echo('<tr class="scorestablegame" id="' , "datescoreboardgamenumber" , iii , 
-         '" onclick="' , createGameOnclickURLForJS(substr(a$.attrs["away_code"], 0, 3),
-                                                   year, month, day, as.integer(a$.attrs["game_nbr"])) ,
          '" style="outline: thin solid"><td class="scorestablegametd">')
+         # '" onclick="' , createGameOnclickURLForJS(substr(a$.attrs["away_code"], 0, 3),
+         #                                           year, month, day, as.integer(a$.attrs["game_nbr"])) ,
+         # '" style="outline: thin solid"><td class="scorestablegametd">')
     echo("<table><tr><td>",a$.attrs["away_team_name"],
          "</td></tr><tr><td>",a$.attrs["home_team_name"],
          "</td></tr></table>\n")
