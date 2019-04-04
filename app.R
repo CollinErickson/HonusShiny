@@ -72,15 +72,28 @@ ui <- fluidPage(
            #             selected=selected_code)
            uiOutput("select_team_input")
     ),
-    column(1,
-           dateInput("datepicker",
-                     label="Date")),
-    column(1,
-           actionButton("back1day", label="<")),
-    column(1,
-           actionButton("gototoday", label="|")),
-    column(1,
-           actionButton("forward1day", label=">")),
+    column(4,
+           tags$table(
+             tags$tr(
+               tags$td(
+                 dateInput("datepicker",
+                           label="Date")
+               ),
+               HTML('
+                 <td class="datemovearrow"    id="dateleft2" >B2 &#10092;</td>
+                   <td class="datemovearrow"  id="dateleft1" >B1 &#10096;</td>
+                   <td class="datemovearrow"  id="datetoday" >T &#10074;</td>
+                   <td class="datemovearrow"  id="dateright1">F1 &#10097;</td>
+                   <td class="datemovearrow"  id="dateright2">F2 &#10093;</td>
+                    '
+               )
+             ))),
+    # column(1,
+    #        actionButton("back1day", label="<")),
+    # column(1,
+    #        actionButton("gototoday", label="|")),
+    # column(1,
+    #        actionButton("forward1day", label=">")),
     column(3,
            # HTML(
            #   paste0(
@@ -278,6 +291,27 @@ server <- function(input, output, session) {
       })
     }
     
+    # Set up date buttons for onclick
+    shinyjs::onclick(id="dateleft2",
+                     expr={shinyjs::js$goToDatePicked(paste0("/?date=",
+                                                             gsub("-", "", as.Date(paste0(year, "-", month, "-", day)) - 2),
+                                                             "&team=", selected_code))})
+    shinyjs::onclick(id="dateleft1",
+                     expr={shinyjs::js$goToDatePicked(paste0("/?date=",
+                                                             gsub("-", "", as.Date(paste0(year, "-", month, "-", day)) - 1),
+                                                             "&team=", selected_code))})
+    shinyjs::onclick(id="datetoday",
+                     expr={shinyjs::js$goToDatePicked(paste0("/?date=", format(Sys.time(), "%Y%m%d"),
+                                                             "&team=", selected_code))})
+    shinyjs::onclick(id="dateright1",
+                     expr={shinyjs::js$goToDatePicked(paste0("/?date=",
+                                                             gsub("-", "", as.Date(paste0(year, "-", month, "-", day)) + 1),
+                                                             "&team=", selected_code))})
+    shinyjs::onclick(id="dateright2",
+                     expr={shinyjs::js$goToDatePicked(paste0("/?date=",
+                                                             gsub("-", "", as.Date(paste0(year, "-", month, "-", day)) + 2),
+                                                             "&team=", selected_code))})
+    
     initial_load_completed <<- T
   })
   
@@ -292,7 +326,7 @@ server <- function(input, output, session) {
   observeEvent(input$datepicker, {
     cat("Updated datepicker!!!\n")
     if (datepicker_loaded >= 1) {
-      # cat("initial load completed!!!\n")
+      cat("initial load completed!!!\n")
       catn(selected_code)
       catn("dateInput is ", as.character(input$datepicker))
       # catn("day is ", class(day), "month is ", month, "year is ", year, "selected_code is ", selected_code)
