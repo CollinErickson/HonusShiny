@@ -11,7 +11,10 @@ library(shiny)
 # library(shinyjs)
 shinyjs::useShinyjs()
 logjs <- cat
+catn <- function(...) {cat(..., "\n")}
 
+# initial_load_completed <- F
+datepicker_loaded <- 0
 
 all_team_abbrev <- c("ANA", "ARI", "ATL", "BAL", "BOS", "CHA", "CHN", "CIN", "CLE", "COL",
                      "DET", "HOU", "KCA", "LAN", "MIA", "MIL", "MIN", "NYA", "NYN", "OAK",
@@ -33,7 +36,28 @@ ui <- fluidPage(
   #             c("white", "yellow", "red", "blue", "purple")),
   # shinyjs::extendShinyjs(text='shinyjs.opo = function(xxx) {console.log("new width 200");}'),
   shinyjs::extendShinyjs(text='shinyjs.opo = function(xxx) {console.log("new width 200");document.getElementById("videoplayer").width = xxx;}'),
-  
+  shinyjs::extendShinyjs(text='shinyjs.goToDatePicked = function(redirectlink) {
+	                       /*var day = $( "#datepicker" ).datepicker( "getDate" ).getDate()  ;
+                         day = day.toString();
+                         if (day.length == 1) { day = "0" + day ;}
+                         var month =   $( "#datepicker" ).datepicker( "getDate" ).getMonth() + 1  ;
+                         month = month.toString();
+                         if (month.length == 1) { month = "0" + month ;}
+                         var year =   $( "#datepicker" ).datepicker( "getDate" ).getFullYear()   ;
+                         year = year.toString();*/
+                         //console.log("goToDatePicked: ", day,month,year, team);
+                         
+                         /*selectteam
+                         var e = document.getElementById("selectteam");
+                         var team = e.options[e.selectedIndex].value;
+                         */
+                         
+                         //window.location.href = "/?date=" + year + month + day + "&team=" + team ;
+                         window.location.href = redirectlink[0] ;
+//console.log("link to go to is ", "/?date=" + year + month + day + "&team=" + team );
+//console.log("link to go to is ", redirectlink);
+                         
+                         }'),
   # Application title
   titlePanel("Honus"),
   
@@ -42,14 +66,14 @@ ui <- fluidPage(
     column(1, h1("Honus")),
     column(2,
            # HTML("Team:"),
-           # selectInput("selectedteam",
+           # selectInput("selectteam",
            #             label="Team",
            #             choices=all_team_abbrev,
            #             selected=selected_code)
            uiOutput("select_team_input")
     ),
     column(1,
-           dateInput("selecteddate",
+           dateInput("datepicker",
                      label="Date")),
     column(1,
            actionButton("back1day", label="<")),
@@ -73,7 +97,7 @@ ui <- fluidPage(
     column(2,
            sliderInput("video_size_slider", "Video size", 100, 2000, value=1000, step=10)#,
            # tableOutput("values")
-           )
+    )
   ),
   
   # Sidebar with a slider input for number of bins 
@@ -142,7 +166,11 @@ server <- function(input, output, session) {
       year  <- format(Sys.time(), "%Y")
       month <- format(Sys.time(), "%m")
       day   <- format(Sys.time(), "%d")
+      day <- "02"
     }
+    
+    catn(year, month, day)
+    updateDateInput(session=session, inputId="datepicker", value=paste0(year, "-", month, "-", day))
     
     cat("selected code is", selected_code, "\n")
     
@@ -158,8 +186,12 @@ server <- function(input, output, session) {
     game_nbrs    <- unname(sapply(1:(length(msl)-1), function(i) {msl[[i]]$.attrs["game_nbr"]}))
     game_pks    <- unname(sapply(1:(length(msl)-1), function(i) {msl[[i]]$.attrs["game_pk"]}))
     cat("game_pks are", game_pks, "\n")
+    cat(sprintf("selected_code is %s\n", selected_code))
     selected_game <- which(home_abbrevs == selected_code | away_abbrevs == selected_code)
-    if (length(selected_game) == 0) {stop("selected_game is none")}
+    if (length(selected_game) == 0) {
+      # stop("selected_game is none")
+      selected_game <- 1
+    }
     if (length(selected_game) > 1) {
       logjs("more than one game possible")
       selected_game <- selected_game[1]
@@ -174,7 +206,7 @@ server <- function(input, output, session) {
     # Now render stuff using inputs
     # Render selected team input
     output$select_team_input <- renderUI( {
-      selectInput("selectedteam",
+      selectInput("selectteam",
                   label="Team",
                   choices=all_team_abbrev,
                   selected=selected_code)
@@ -246,6 +278,7 @@ server <- function(input, output, session) {
       })
     }
     
+    initial_load_completed <<- T
   })
   
   # shinyjs::extendShinyjs(text='shinyjs.opo = function(xxx) {console.log("new width 200");document.getElementById("videoplayer").width = 250;}')
@@ -253,15 +286,23 @@ server <- function(input, output, session) {
   # shinyjs::js$opo(1);
   # Reactive slider
   observeEvent(input$video_size_slider, {
-    tmp <- input$video_size_slider;
-    # shinyjs::js("console.log(updatedslider)")
-    cat("updatedslider")
-    # document.getElementById("videoplayer").width# = \"#e0ccff\";
-    # cat("WIDDTH IS ", shinyjs::extendShinyjs(text='document.getElementById("videoplayer").width'), "\n")
-    # shinyjs::extendShinyjs(text='shinyjs.opo = function() {return 1+1;}')
-    cat("WIDDTH IS ", shinyjs::js$opo(input$video_size_slider), "\n")
-    # Value = data.frame(input$video_size_slider)
+    cat("runs when init slider!!!")
+    shinyjs::js$opo(input$video_size_slider)
   })
+  observeEvent(input$datepicker, {
+    cat("Updated datepicker!!!\n")
+    if (datepicker_loaded >= 1) {
+      # cat("initial load completed!!!\n")
+      catn(selected_code)
+      catn("dateInput is ", as.character(input$datepicker))
+      # catn("day is ", class(day), "month is ", month, "year is ", year, "selected_code is ", selected_code)
+      shinyjs::js$goToDatePicked(paste0("/?date=", gsub("-", "", as.character(input$datepicker)), "&team=", selected_code)) # "/?date=" + year + month + day + "&team=" + team
+      # shinyjs::js$goToDatePicked(paste0("/?date=", as.character(input$datepicker), "&team=", selected_code)) # "/?date=" + year + month + day + "&team=" + team 
+      datepicker_loaded <<- 0
+    } else {
+      datepicker_loaded <<- datepicker_loaded + 1
+    }
+  }, ignoreInit = T)
   # output$values <- renderTable({slider_size_reactive()})
   # observeEvent(input$col, {
   #   shinyjs::js$pageCol(input$col)
