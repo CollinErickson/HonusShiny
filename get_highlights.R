@@ -14,7 +14,7 @@ get_highlights <- function(year, month, day, away_code, home_code, dbh, game_pk,
     }
   }
   
-  echo('<table><tr><td style="vertical-align:top;"><table id="headlinestable">')
+  echo('<table><tr><td style="vertical-align:top;"><table style="min-width:250px;" id="headlinestable">')
   # This section prints the headlines for the highlights
   if (length(headlines)>0) { # if there is at least one, loop over them
     urls <- sapply(p1$highlights$highlights$items$playbacks, function(x) x$url[1])
@@ -29,7 +29,7 @@ get_highlights <- function(year, month, day, away_code, home_code, dbh, game_pk,
       url = url4000K; # This sets the quality
       # echo(the headline
       # cat("Inintial video url is", url, "\n")
-      echo("<tr class='headlinestabletr' id='headlinetr",iii,"' onclick='document.getElementById(\"headlinetr",iii,"\").style.background = \"#e0ccff\";'>
+      echo("<tr style='border: 1px solid red' class='headlinestabletr' id='headlinetr",iii,"' onclick='document.getElementById(\"headlinetr",iii,"\").style.background = \"#e0ccff\";'>
         <td id='headline",iii,"' class='headlinestabletd' 
         onclick='document.getElementById(\"videoplayer\").setAttribute(\"src\", \"",url,"\");
         document.getElementById(\"videoplayer\").autoplay=true;'>",headline,"</td>
@@ -54,10 +54,15 @@ get_highlights <- function(year, month, day, away_code, home_code, dbh, game_pk,
   # This section makes the video player
   # make video player if any headlines
   if (length(headlines)>0) {
-    echo('<video width="600px" id="videoplayer" controls  onclick="this.paused ? this.play() : this.pause();">
+    echo('<video width="1000px" id="videoplayer" controls>
 					<source src="<?php echo($urls[0];?>" type="video/mp4">
 					Your browser does not support the video tag.
 					</video>');
+    # No longer need onclick to play/pause since it does it automatically
+#     echo('<video width="600px" id="videoplayer" controls  onclick="this.paused ? this.play() : this.pause();">
+# 					<source src="<?php echo($urls[0];?>" type="video/mp4">
+# 					Your browser does not support the video tag.
+# 					</video>');
   } else { # else do something else
     #echo('<img src="http:#mlb.mlb.com/mlb/images/devices/teamBackdrop/teamBackdrop.jpg" />';
     # NO LONGER HAVE IMAGES
@@ -81,4 +86,4 @@ get_highlights <- function(year, month, day, away_code, home_code, dbh, game_pk,
     outstring
   }
 }
-get_highlights("2019", "04", "02", "det", "nya", "1", "567460")
+# get_highlights("2019", "04", "02", "det", "nya", "1", "567460")

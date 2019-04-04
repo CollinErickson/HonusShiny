@@ -181,5 +181,5 @@ get_all_game_boxes_for_sidebar <- function(msl) {
   echo ("</table>");
   outstring
 }
-createGameOnclickURLForJS <- function(away, year, month, day, gamenbr){logjs("NEEDTOIMPLEMENTTHIS");""}
-get_all_game_boxes_for_sidebar(msl)
+# createGameOnclickURLForJS <- function(away, year, month, day, gamenbr){logjs("NEEDTOIMPLEMENTTHIS");""}
+# get_all_game_boxes_for_sidebar(msl)

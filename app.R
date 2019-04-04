@@ -71,7 +71,7 @@ ui <- fluidPage(
            uiOutput("header_team_info")
     ),
     column(2,
-           sliderInput("video_size_slider", "Video size", 100, 2000, value=600, step=10)#,
+           sliderInput("video_size_slider", "Video size", 100, 2000, value=1000, step=10)#,
            # tableOutput("values")
            )
   ),
@@ -94,21 +94,28 @@ ui <- fluidPage(
       #   get_highlights(year, month, day, away_code, home_code, game_nbr, game_pk)
       # )
       fluidRow(
-        column(6,
-               uiOutput("highlights_html")
-        ),
-        column(6,
-               uiOutput("highlight_embedded")
-               #           HTML('<video id="videoplayer" controls  onclick="this.paused ? this.play() : this.pause();">
-               # 					<source src="https://cuts.diamond.mlb.com/FORGE/2019/2019-04/03/17fd926c-c985a511-52b8d70e-csvm-diamondx64-asset_1280x720_59_4000K.mp4" type="video/mp4">
-               #                Your browser does not support the video tag.
-               #                </video>')
-               # tags$video(id="video2", type = "video/mp4",src = "https://cuts.diamond.mlb.com/FORGE/2019/2019-04/03/17fd926c-c985a511-52b8d70e-csvm-diamondx64-asset_1280x720_59_4000K.mp4",
-               #            controls = "controls")
+        # column(6,
+        #        uiOutput("highlights_html")
+        # ),
+        # column(6,
+        #        uiOutput("highlight_embedded")
+        #        #           HTML('<video id="videoplayer" controls  onclick="this.paused ? this.play() : this.pause();">
+        #        # 					<source src="https://cuts.diamond.mlb.com/FORGE/2019/2019-04/03/17fd926c-c985a511-52b8d70e-csvm-diamondx64-asset_1280x720_59_4000K.mp4" type="video/mp4">
+        #        #                Your browser does not support the video tag.
+        #        #                </video>')
+        #        # tags$video(id="video2", type = "video/mp4",src = "https://cuts.diamond.mlb.com/FORGE/2019/2019-04/03/17fd926c-c985a511-52b8d70e-csvm-diamondx64-asset_1280x720_59_4000K.mp4",
+        #        #            controls = "controls")
+        # )
+        tags$table(#style="table-layout:fixed;",
+          tags$tr(
+            tags$td(uiOutput("highlights_html")) , #style="width:900px;table-layout:fixed;overflow:hidden;word-wrap:break-word;min-width=900px;"),
+            tags$td(uiOutput("highlight_embedded"))
+          )
         )
       )
     )
-  )
+  ),
+  HTML('<div align="right">Suggestions, comments, questions? Email <a href="mailto:Honus1064@gmail.com" style="color:inherit;">Honus1064@gmail.com</a></div>')
 )
 
 # Define server logic required to draw a histogram
